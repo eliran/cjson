@@ -1,0 +1,26 @@
+{
+  "name": "cjson",
+  "version": "0.9.0",
+  "description": "Compact binary json",
+  "main": "index.js",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha",
+    "autotest": "node_modules/.bin/mocha -w",
+    "cover": "istanbul cover node_modules/.bin/_mocha"
+  },
+  "author": {
+    "name": "Eliran Ben-Ezra",
+    "email": "eliran@threeplay.com",
+    "url": "threeplay.com"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "istanbul": "^0.3.14",
+    "mocha": "^2.1.0",
+    "sinon": "^1.13.0"
+  },
+  "license": "ISC"
+}
