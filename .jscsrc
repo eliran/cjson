@@ -1,0 +1,22 @@
+{ "excludeFiles":
+  [ "node_modules/**"
+  , "coverage"
+  ]
+, "requireLineFeedAtFileEnd": true
+, "disallowMultipleLineBreaks": true
+, "requireMultipleVarDecl": true
+, "disallowEmptyBlocks": true
+, "disallowSpaceAfterObjectKeys": true
+, "disallowCommaBeforeLineBreak": true
+, "disallowTrailingWhitespace": "ignoreEmptyLines"
+, "disallowTrailingComma": true
+, "disallowSemicolons": true
+, "requireCapitalizedConstructors": true
+, "requireSpacesInsideObjectBrackets": "all"
+, "requireSpacesInsideArrayBrackets": "all"
+, "requireSpaceAfterKeywords": [ "if", "else", "for", "while", "do", "switch", "try", "catch" ]
+, "disallowSpaceAfterPrefixUnaryOperators": [ "++", "--", "+", "-", "~", "!" ]
+, "disallowSpaceBeforePostfixUnaryOperators": [ "++", "--" ]
+, "requireSpaceBeforeBinaryOperators": [ "+", "-", "/", "*", "=", "==", "===", "!=", "!==" ]
+, "requireSpaceAfterBinaryOperators": [ "+", "-", "/", "*", "=", "==", "===", "!=", "!==" ]
+}
