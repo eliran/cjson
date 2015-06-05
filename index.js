@@ -1,5 +1,6 @@
 'use strict'
-var codes = require('./codes')
+var util = require('util')
+  , codes = require('./codes')
   , self = module.exports
 
 self.stringEncoding = 'utf8'
@@ -13,12 +14,62 @@ self.encodeObject = function(obj){
   if ( typeof obj === 'string' || obj instanceof String ) return encodeString(obj)
   if ( isInteger(obj) ) return encodeInteger(obj)
   if ( isFloat(obj) ) return encodeFloat(obj)
+  if ( typeof obj === 'boolean' ) return encodeBool(obj)
+  if ( util.isDate(obj) ) return encodeDate(obj)
+  if ( Array.isArray(obj) ) return encodeArray(obj)
+  if ( obj !== null && typeof obj === 'object' ) return encodeJSObject(obj)
   return encodeNull()
 }
 
+function encodeJSObject(obj){
+  var encodedJSObject = []
+  for (var key in obj){
+    if ( obj.hasOwnProperty(key) ) {
+      encodedJSObject.push(self.encodeObject(key))
+      encodedJSObject.push(self.encodeObject(obj[key]))
+    }
+  }
+  var header = createObjectHeader(codes.CODE_DICT, encodedJSObject.length / 2)
+  if ( Buffer.isBuffer(header) ){
+    encodedJSObject.unshift(header)
+    return Buffer.concat(encodedJSObject)
+  }
+  return null
+}
+
+function encodeArray(array){
+  var allEncodedObjectsLength = 0
+    , encodedArrayObjects = array.map(function(obj){
+        var encodedObject = self.encodeObject(obj)
+        allEncodedObjectsLength += encodedObject.length
+        return encodedObject
+      })
+    , header = createObjectHeader(codes.CODE_ARRAY, encodedArrayObjects.length)
+  if ( Buffer.isBuffer(header) ){
+    encodedArrayObjects.unshift(header)
+    return Buffer.concat(encodedArrayObjects)
+  }
+  return null
+}
+
+function encodeDate(date){
+  var buffer = new Buffer(5)
+  buffer[0] = codes.CODE_DATE
+  buffer.writeUInt32LE(Math.floor(date.getTime() / 1000), 1)
+  return buffer
+}
+
+function encodeBool(bool){
+  return encodeSingleByteCode(bool ? codes.CODE_TRUE : codes.CODE_FALSE)
+}
+
 function encodeNull(){
+  return encodeSingleByteCode(codes.CODE_NULL)
+}
+
+function encodeSingleByteCode(code){
   var buffer = new Buffer(1)
-  buffer[0] = codes.CODE_NULL
+  buffer[0] = code
   return buffer
 }
 

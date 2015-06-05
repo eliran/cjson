@@ -11,7 +11,7 @@
     "test": "node_modules/.bin/mocha",
     "posttest": "npm run cover",
     "autotest": "node_modules/.bin/mocha -w",
-    "cover": "istanbul cover node_modules/.bin/_mocha"
+    "cover": "istanbul cover node_modules/.bin/_mocha -- --reporter=min"
   },
   "author": {
     "name": "Eliran Ben-Ezra",
