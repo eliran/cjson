@@ -1,14 +1,15 @@
-var expect = require('expect.js')
+var expect = require('chai').expect
 var cjson  = require('../index')
 var codes  = require('../codes')
 var common = require('../common')
+var testCommon = require('./testCommon')
 
 describe("objects encoder",function(){
   describe("string encoder",function(){
     it("should encode short strings (below 16 bytes) with CODE_SHORT_STRING",function(){
-      testShortString(generateStringWithLength(15))
-      testShortString(generateStringWithLength(4))
-      testShortString(generateStringWithLength(0))
+      testShortString(testCommon.generateStringWithLength(15))
+      testShortString(testCommon.generateStringWithLength(4))
+      testShortString(testCommon.generateStringWithLength(0))
     })
 
     it("should encode strings with upto 255 bytes with CODE_STRING_1LEN",function(){
@@ -22,15 +23,15 @@ describe("objects encoder",function(){
     })                                
   
     it("should return null if string is bigger than 65535 bytes",function(){
-      expect(cjson.encodeObject(generateStringWithLength(65536))).to.be(null)
+      expect(cjson.encodeObject(testCommon.generateStringWithLength(65536))).to.equal(null)
     })
   })
 
   describe("data encoder",function(){
     it("should encode short data (below 16 bytes) with CODE_SHORT_DATA",function(){
-      testShortData(generateDataWithLength(15))
-      testShortData(generateDataWithLength(4))
-      testShortData(generateDataWithLength(0))
+      testShortData(testCommon.generateDataWithLength(15))
+      testShortData(testCommon.generateDataWithLength(4))
+      testShortData(testCommon.generateDataWithLength(0))
     })
 
     it("should encode data with upto 255 bytes with CODE_DATA_1LEN",function(){
@@ -44,7 +45,7 @@ describe("objects encoder",function(){
     })
 
     it("should return null if data is bigger than 65535 bytes",function(){
-      expect(cjson.encodeObject(generateDataWithLength(65536))).to.be(null)
+      expect(cjson.encodeObject(testCommon.generateDataWithLength(65536))).to.equal(null)
     })
   })
 
@@ -119,7 +120,7 @@ describe("objects encoder",function(){
   describe("date encoder",function(){
     it("should encode date as seconds from POSIX time",function(){
       var result = testEncodedObject(new Date(123456), 4, codes.CODE_DATE)
-      expect(result.readUInt32LE(1)).to.be(123)
+      expect(result.readUInt32LE(1)).to.equal(123)
     })
   })
 
@@ -141,7 +142,7 @@ describe("objects encoder",function(){
     })
 
     it("should return null if array is bigger than 65535 elements",function(){
-      expect(cjson.encodeObject(generateArrayWithLength(65536))).to.be(null)
+      expect(cjson.encodeObject(testCommon.generateArrayWithLength(65536))).to.equal(null)
     })
 
   })
@@ -164,18 +165,18 @@ describe("objects encoder",function(){
     })
 
     it("should return null if object{} has more than 65535 elements",function(){
-      expect(cjson.encodeObject(generateJSObjectWithCount(65536))).to.be(null)
+      expect(cjson.encodeObject(testCommon.generateJSObjectWithCount(65536))).to.equal(null)
     })
 
   })
 })
 
 function testEncodedJSObject(len, lenBytes){
-  return testEncodedObject(generateJSObjectWithCount(len), len * (2 + 7), codes.lengthCodeWithBaseLength(codes.CODE_DICT, len), lenBytes || 0)
+  return testEncodedObject(testCommon.generateJSObjectWithCount(len), len * (2 + 7), codes.lengthCodeWithBaseLength(codes.CODE_DICT, len), lenBytes || 0)
 }
 
 function testEncodedArray(len, lenBytes){
-  return testEncodedObject(generateArrayWithLength(len), len * 2, codes.lengthCodeWithBaseLength(codes.CODE_ARRAY, len), lenBytes || 0)
+  return testEncodedObject(testCommon.generateArrayWithLength(len), len * 2, codes.lengthCodeWithBaseLength(codes.CODE_ARRAY, len), lenBytes || 0)
 }
 
 function expectNullEncoding(result){
@@ -200,11 +201,11 @@ function validateFloat(buffer, fnum){
 }
 
 function testEncodeString(length, code, lenSize){
-  return testEncodedObject(generateStringWithLength(length), length, code, lenSize)
+  return testEncodedObject(testCommon.generateStringWithLength(length), length, code, lenSize)
 }
 
 function testEncodeData(length, code, lenSize){
-  return testEncodedObject(generateDataWithLength(length), length, code, lenSize)
+  return testEncodedObject(testCommon.generateDataWithLength(length), length, code, lenSize)
 }
 
 function testEncodedObject(object, length, code, lenSize){
@@ -212,39 +213,14 @@ function testEncodedObject(object, length, code, lenSize){
 }
 
 function expectCode(buf, code){
-  expect(buf).to.be.a(Buffer)
-  expect(buf.readUInt8(0)).to.be(code)
+  expect(buf).to.be.an.instanceof(Buffer)
+  expect(buf.readUInt8(0)).to.equal(code)
   return buf
 }
 
 function expectCodeWithLength(buf, code, len){
   expect(buf).to.have.length(len)
   return expectCode(buf, code)
-}
-
-function generateJSObjectWithCount(len){
-  var obj = {}
-  for ( var i = 0; i < len; ++i ) {
-    obj[100000 + i] = 123
-  }      
-  return obj
-}
-
-function generateArrayWithLength(len){
-  return generateStringWithLength(len).split('')
-}
-function generateStringWithLength(len){
-  var s = "x"
-  while ( s.length < len ) {
-    s = s + s
-  }
-  return s.substring(0, len)
-}
-
-function generateDataWithLength(len){
-  var buffer = new Buffer(len)
-  buffer.write(generateStringWithLength(len), 0, len)
-  return buffer
 }
 
 function testShortString(str){

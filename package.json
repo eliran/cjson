@@ -7,7 +7,7 @@
     "node": "0.10.x"
   },
   "scripts": {
-    "pretest" : "jshint *.js && jscs *.js",
+    "pretest": "jshint *.js && jscs *.js",
     "test": "node_modules/.bin/mocha",
     "posttest": "npm run cover",
     "autotest": "node_modules/.bin/mocha -w",
@@ -19,12 +19,12 @@
     "url": "threeplay.com"
   },
   "devDependencies": {
-    "expect.js": "^0.3.1",
+    "chai": "^3.0.0",
     "istanbul": "^0.3.14",
-    "mocha": "^2.1.0",
-    "sinon": "^1.13.0",
     "jscs": "^1.13.1",
-    "jshint": "^2.7.0"
+    "jshint": "^2.7.0",
+    "mocha": "^2.1.0",
+    "sinon": "^1.13.0"
   },
   "license": "ISC"
 }
