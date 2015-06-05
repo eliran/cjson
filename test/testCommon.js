@@ -2,6 +2,8 @@
 var cjson  = require('../index')
   , expect = require('chai').expect
   , self = module.exports = {}
+  , cachedGeneratedString = "xy"
+  , cachedGeneratedArray = []
 
 self.generateJSObjectWithCount = function(len){
   var obj = {}
@@ -12,15 +14,17 @@ self.generateJSObjectWithCount = function(len){
 }
 
 self.generateArrayWithLength = function(len){
-  return self.generateStringWithLength(len).split('')
+  if ( cachedGeneratedArray.length < len ) {
+    cachedGeneratedArray = self.generateStringWithLength(len).split('')
+  }
+  return cachedGeneratedArray.slice(0, len)
 }
 
 self.generateStringWithLength = function(len){
-  var s = len>1 ? "xy" : "x"
-  while ( s.length < len ) {
-    s = s + s
+  while ( cachedGeneratedString.length < len ) {
+    cachedGeneratedString = cachedGeneratedString + cachedGeneratedString
   }
-  return s.substring(0, len)
+  return cachedGeneratedString.substring(0, len)
 }
 
 self.generateDataWithLength = function(len){
@@ -48,3 +52,7 @@ self.runFloatTestCases = function(cases){
     expect((decodedNumber - number)/number).to.closeTo(0, 0.0001)
   }
 }
+
+
+// Make sure we have an array cached (Will also cache big string) to help tests run quicker
+self.generateArrayWithLength(65536)
