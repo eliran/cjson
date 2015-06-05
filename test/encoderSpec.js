@@ -1,6 +1,7 @@
 var expect = require('expect.js')
 var cjson  = require('../index')
 var codes  = require('../codes')
+var common = require('../common')
 
 describe("objects encoder",function(){
   describe("string encoder",function(){
@@ -84,13 +85,13 @@ describe("objects encoder",function(){
     describe("floats",function(){
       it("should encode floats",function(){
         testNumber(1.1, codes.CODE_FSINGLE, 4)
-        validateFloat(testNumber(cjson.FLOAT_MIN, codes.CODE_FSINGLE, 4), cjson.FLOAT_MIN)
-        validateFloat(testNumber(cjson.FLOAT_MAX, codes.CODE_FSINGLE, 4), cjson.FLOAT_MAX)
+        validateFloat(testNumber(common.FLOAT_MIN, codes.CODE_FSINGLE, 4), common.FLOAT_MIN)
+        validateFloat(testNumber(common.FLOAT_MAX, codes.CODE_FSINGLE, 4), common.FLOAT_MAX)
       })
 
       it("should encode doubles",function(){
-        validateDouble(testNumber(cjson.DOUBLE_MIN, codes.CODE_FDOUBLE, 8), cjson.DOUBLE_MIN)
-        validateDouble(testNumber(cjson.DOUBLE_MAX, codes.CODE_FDOUBLE, 8), cjson.DOUBLE_MAX)
+        validateDouble(testNumber(common.DOUBLE_MIN, codes.CODE_FDOUBLE, 8), common.DOUBLE_MIN)
+        validateDouble(testNumber(common.DOUBLE_MAX, codes.CODE_FDOUBLE, 8), common.DOUBLE_MAX)
       })
     })
   })
