@@ -3,7 +3,7 @@ var expect = require('chai').expect
   , common = require('../common')
 
 describe('objects decoder',function(){
-  it('should decode any encoded string',function(){
+  describe('should decode any encoded string',function(){
     testCommon.runTestCases([
       [ 'Zero length string', testCommon.generateStringWithLength(0) ]
     , [ '4 char string', testCommon.generateStringWithLength(4) ]
@@ -15,7 +15,7 @@ describe('objects decoder',function(){
     ])
   })
 
-  it('should decode any encoded data',function(){
+  describe('should decode any encoded data',function(){
     testCommon.runTestCases([
       [ 'Zero length data', testCommon.generateDataWithLength(0) ]
     , [ '4 byte data', testCommon.generateDataWithLength(4) ]
@@ -27,7 +27,7 @@ describe('objects decoder',function(){
     ])
   })
 
-  it('should decode null & boolean values',function(){
+  describe('should decode null & boolean values',function(){
     testCommon.runTestCases([
       [ 'Null value', null ]
     , [ 'True value', true ]
@@ -35,30 +35,30 @@ describe('objects decoder',function(){
     ])
   })  
 
-  it('should decode date values',function(){
+  describe('should decode date values',function(){
     testCommon.runTestCases([
       new Date(12345 * 1000)
     , new Date(56789 * 1000)
     ])
   })
 
-  it('should decode positive integers',function(){
+  describe('should decode positive integers',function(){
     testCommon.runTestCases([0, 16, 256, 65535, 88888, 0x7fffffff])
   })
 
-  it('should decode negative integers',function(){
+  describe('should decode negative integers',function(){
     testCommon.runTestCases([-1, -16, -256, -65535, -88888, -0x7fffffff])
   })
 
-  it('should decode floats',function(){
+  describe('should decode floats',function(){
     testCommon.runFloatTestCases([1.123,52.123,common.FLOAT_MIN,common.FLOAT_MAX])
   })
 
-  it('should decode doubles',function(){
+  describe('should decode doubles',function(){
     testCommon.runFloatTestCases([common.DOUBLE_MIN,common.DOUBLE_MAX])
   })
 
-  it('should decode arrays',function(){
+  describe('should decode arrays',function(){
     testCommon.runTestCases([
       [ 'Zero length array', testCommon.generateArrayWithLength(0) ]
     , [ '4 Elements array', testCommon.generateArrayWithLength(4) ]
@@ -71,7 +71,7 @@ describe('objects decoder',function(){
     ])
   })
 
-  it('should decode object{}',function(){
+  describe('should decode object{}',function(){
     testCommon.runTestCases([
       [ 'Zero length object{}', testCommon.generateJSObjectWithCount(0) ]
     , [ '4 Elements object{}', testCommon.generateJSObjectWithCount(4) ]

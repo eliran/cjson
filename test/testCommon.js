@@ -36,12 +36,15 @@ self.generateDataWithLength = function(len){
 self.runTestCases = function(cases){
   for (var i = 0; i < cases.length; ++i ){
     var testCase = cases[i]
-      , testDescription = 'Test #' + (i+1).toString()
+      , testDescription = ''
     if ( Array.isArray(testCase) ){
       testDescription = testCase[0]
       testCase = testCase[1]
     }
-    expect(cjson.decodeObject(cjson.encodeObject(testCase)), testDescription).to.deep.equal(testCase)
+    else testDescription = testCase.toString() || ('Test #' + (i+1).toString())
+    it(testDescription,function(){
+      expect(cjson.decodeObject(cjson.encodeObject(testCase))).to.deep.equal(testCase)
+    })
   }
 }
 

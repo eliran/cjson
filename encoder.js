@@ -34,14 +34,14 @@ function encodeJSObject(obj){
 }
 
 function encodeArray(array){
-  var allEncodedObjectsLength = 0
-    , encodedArrayObjects = array.map(function(obj){
-        var encodedObject = encodeObject(obj)
-        allEncodedObjectsLength += encodedObject.length
-        return encodedObject
-      })
-    , header = createObjectHeader(codes.CODE_ARRAY, encodedArrayObjects.length)
+  var header = createObjectHeader(codes.CODE_ARRAY, array.length)
   if ( Buffer.isBuffer(header) ){
+    var allEncodedObjectsLength = 0
+      , encodedArrayObjects = array.map(function(obj){
+      var encodedObject = encodeObject(obj)
+      allEncodedObjectsLength += encodedObject.length
+      return encodedObject
+    })
     encodedArrayObjects.unshift(header)
     return Buffer.concat(encodedArrayObjects)
   }
