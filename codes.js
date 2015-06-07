@@ -25,8 +25,7 @@ var codes = module.exports = {
 
 , CODE_NULL:          0xF0
 
-, CODE_DSTRING_1BYTE: 0xF1
-, CODE_DSTRING_2BYTE: 0xF2
+, CODE_DSTRING:       0xF1
 
 , CODE_DATE:          0xF3
 , CODE_DATE_MS:       0xF4
@@ -49,6 +48,9 @@ codes.CODE_STRING_2LEN = (codes.CODE_STRING + codes.CODE_2LEN)
 codes.CODE_DATA_2LEN = (codes.CODE_DATA + codes.CODE_2LEN)
 codes.CODE_ARRAY_2LEN = (codes.CODE_ARRAY + codes.CODE_2LEN)
 codes.CODE_DICT_2LEN = (codes.CODE_DICT + codes.CODE_2LEN)
+
+codes.CODE_DSTRING_1BYTE = (codes.CODE_DSTRING + codes.CODE_1BYTE)
+codes.CODE_DSTRING_2BYTE = (codes.CODE_DSTRING + codes.CODE_2BYTE)
 
 codes.lengthCodeWithBaseLength = function(baseCode, length){
   if ( length < 16 ) return (baseCode << 4) + length
@@ -78,6 +80,10 @@ codes.extractCodeLength = function(data, dataOffset){
       return [ code, 4, 1 ]
     case codes.CODE_DATE_MS:
       return [ code, 8, 1 ]
+    case codes.CODE_DSTRING_1BYTE:
+      return [ codes.CODE_DSTRING, 1, 1 ]
+    case codes.CODE_DSTRING_2BYTE:
+      return [ codes.CODE_DSTRING, 2, 1 ]
   }
   return [ code , 0, 1 ]
 }

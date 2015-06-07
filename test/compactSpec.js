@@ -19,9 +19,16 @@ describe('compact object',function(){
 
   it('should return the index of a matching entry',function(){
      var compactor = defaultCompactor()
-     expect(compactor.valueOf('123')).to.equal(0)
-     expect(compactor.valueOf('testing')).to.equal(2)
-     expect(compactor.valueOf('values')).to.equal(3)
+     expect(compactor.indexOf('123')).to.equal(0)
+     expect(compactor.indexOf('testing')).to.equal(2)
+     expect(compactor.indexOf('values')).to.equal(3)
+  })
+
+  it('should retrive the string matching the index',function(){
+     var compactor = defaultCompactor()
+     expect(compactor.valueOf(0)).to.equal('123')
+     expect(compactor.valueOf(2)).to.equal('testing')
+     expect(compactor.valueOf(3)).to.equal('values')
   })
 
   it('should return null when key does not match',function(){
@@ -32,7 +39,13 @@ describe('compact object',function(){
      var compactor = defaultCompactor()
      expect(compactor.compact('missingKey')).to.equal(null)
      expect(compactor.countOfEntries).to.equal(5)
-     expect(compactor.valueOf('missingKey')).to.equal(4)
+     expect(compactor.indexOf('missingKey')).to.equal(4)
+  })
+
+  it('it should not compact one letter strings',function(){
+     var compactor = defaultCompactor()
+     expect(compactor.compact('a')).to.equal(null)
+     expect(compactor.compact('a')).to.equal(null)
   })
 
   it('should return the index of a repeated key using compact',function(){
@@ -55,6 +68,26 @@ describe('compact object',function(){
      var compactorCopy = compactor.copy()
      expect(compactorCopy.countOfEntries).to.equal(4)
      expect(compactor.countOfEntries).to.equal(5)
+  })
+})
+
+describe('encoding/decoding with compactor',function(){
+  var testObject = ['abc','newValue','newValue']
+
+  function compactedTestObject(){
+    var compactor = defaultCompactor()
+    var encodedArray = cjson.encodeObject(testObject,compactor)
+    return encodedArray
+  }
+
+  it('should compact repeated strings in array',function(){
+     var compactedObject = compactedTestObject()
+     expect(compactedObject).to.have.length(1+2+1+8+2)
+     expect(cjson.decodeObject(compactedObject, false)).to.deep.equal(['#1','newValue','#4'])
+  })
+
+  it('should decode compacted object',function(){
+     expect(cjson.decodeObject(compactedTestObject(), defaultCompactor())).to.deep.equal(testObject)
   })
 })
 

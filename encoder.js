@@ -1,28 +1,34 @@
 'use strict'
 var common = require('./common')
   , codes = require('./codes')
+  , Compactor = require('./compactor')
   , stringEncoding = 'utf8'
 
-module.exports = encodeObject
+module.exports = function(obj, compactor){
+  if ( compactor && !Compactor.isCompactor(compactor) ) {
+    compactor = Compactor.create()
+  }
+  return encodeObject(obj, compactor)
+}
 
-function encodeObject(obj){
+function encodeObject(obj, compactor){
   if ( Buffer.isBuffer(obj) ) return encodeData(obj)
-  if ( common.isString(obj) ) return encodeString(obj)
+  if ( common.isString(obj) ) return encodeString(obj, compactor)
   if ( common.isInteger(obj) ) return encodeInteger(obj)
   if ( common.isFloat(obj) ) return encodeFloat(obj)
   if ( common.isBoolean(obj) ) return encodeBool(obj)
   if ( common.isDate(obj) ) return encodeDate(obj)
-  if ( Array.isArray(obj) ) return encodeArray(obj)
-  if ( common.isObject(obj) ) return encodeJSObject(obj)
+  if ( Array.isArray(obj) ) return encodeArray(obj, compactor)
+  if ( common.isObject(obj) ) return encodeJSObject(obj, compactor)
   return encodeNull()
 }
 
-function encodeJSObject(obj){
+function encodeJSObject(obj, compactor){
   var encodedJSObject = []
   for (var key in obj){
     if ( obj.hasOwnProperty(key) ) {
-      encodedJSObject.push(encodeObject(key))
-      encodedJSObject.push(encodeObject(obj[key]))
+      encodedJSObject.push(encodeObject(key, compactor))
+      encodedJSObject.push(encodeObject(obj[key], compactor))
     }
   }
   var header = createObjectHeader(codes.CODE_DICT, encodedJSObject.length / 2)
@@ -33,12 +39,12 @@ function encodeJSObject(obj){
   return null
 }
 
-function encodeArray(array){
+function encodeArray(array, compactor){
   var header = createObjectHeader(codes.CODE_ARRAY, array.length)
   if ( Buffer.isBuffer(header) ){
     var allEncodedObjectsLength = 0
       , encodedArrayObjects = array.map(function(obj){
-      var encodedObject = encodeObject(obj)
+      var encodedObject = encodeObject(obj, compactor)
       allEncodedObjectsLength += encodedObject.length
       return encodedObject
     })
@@ -69,11 +75,33 @@ function encodeSingleByteCode(code){
   return buffer
 }
 
-function encodeString(str){
+function encodeString(str, compactor){
+  if ( compactor ) {
+    var indexId = compactor.compact(str)
+    if ( indexId !== null ) {
+      return encodeDStringId(indexId)
+    }
+  }
+
   var stringLength = Buffer.byteLength(str, stringEncoding)
     , data = new Buffer(stringLength)
   data.write(str, 0, stringLength, stringEncoding)
   return encodeData(data, codes.CODE_STRING)
+}
+
+function encodeDStringId(indexId){
+  var buffer = null
+  if ( indexId < 256 ) {
+    buffer = new Buffer(2)
+    buffer[0] = codes.CODE_DSTRING_1BYTE
+    buffer.writeUInt8(indexId, 1)
+  }
+  else if ( indexId < 65536 ) {
+    buffer = new Buffer(3)
+    buffer[0] = codes.CODE_DSTRING_2BYTE
+    buffer.writeUInt16LE(indexId, 1)
+  }
+  return buffer
 }
 
 function encodeData(data, baseCode){
